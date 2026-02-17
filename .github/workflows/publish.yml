@@ -16,7 +16,7 @@ jobs:
         run: |
           # The * finds your folder automatically regardless of the backtick
           cd Drigo*/ 
-          zip -r ../drigo-pack.zip assets/ pack.mcmeta pack.png
+          zip -r ../Drigo 3D Lantern`s x Punchy.zip assets/ pack.mcmeta pack.png
 
       - name: Publish to Modrinth & CurseForge
         uses: Kir-Antipov/mc-publish@v3.3
@@ -32,4 +32,4 @@ jobs:
             1.21
             1.21.1
           loaders: minecraft
-          files: drigo-pack.zip
+          files: Drigo 3D Lantern`s x Punchy.zip
