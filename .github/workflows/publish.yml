@@ -88,3 +88,6 @@ jobs:
           name: "Drigo 3D Lantern's x Punchy - MC ${{ env.MC_VERSION }}"
           version: ${{ env.MC_VERSION }}
           files: "Drigo 3D Lantern's x Punchy.zip"
+          
+          # Tell CurseForge this is a vanilla resource pack
+          loaders: "minecraft"
