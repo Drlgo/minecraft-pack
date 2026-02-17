@@ -3,7 +3,7 @@ name: Publish Texture Pack
 on:
   push:
     tags:
-      - 'v*' # This triggers the script when you create a tag like v1.0
+      - 'v*'
 
 jobs:
   publish:
@@ -20,23 +20,15 @@ jobs:
       - name: Publish to Modrinth & CurseForge
         uses: Kir-Antipov/mc-publish@v3.3
         with:
-          # --- Modrinth Settings ---
-          modrinth-id: X4S78Ho4 # Replace with your Modrinth ID
+          modrinth-id: X4S78Ho4
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-
-          # --- CurseForge Settings ---
-          curseforge-id: 1458402 # Replace with your CurseForge ID
+          curseforge-id: 1458402
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-
-          # --- General Settings ---
           name: Drigo 3D Lanterns ${{ github.ref_name }}
           version: ${{ github.ref_name }}
           version-type: release
-          
-          # This tells the sites which Minecraft versions are supported
           game-versions: |
             1.21
-            1.21.11
-          
+            1.21.1
           loaders: minecraft
-          files: Drigo 3D Lantern`s x Punchy.zip
+          files: "Drigo 3D Lantern's x Punchy.zip"
