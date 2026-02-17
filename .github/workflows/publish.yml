@@ -62,7 +62,7 @@ jobs:
         run: |
           # Entering the folder and zipping "." ensures files are at the root
           cd Drigo*/
-          zip -r "../drigo-pack.zip" .
+          zip -r "../Drigo 3D Lantern's x Punchy.zip" .
 
       - name: Publish to Modrinth & CurseForge
         if: env.NEW_UPDATE == 'true'
@@ -73,10 +73,12 @@ jobs:
           curseforge-id: 1458402
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           
-          # Using your working naming and versioning style
-          name: "Auto-Update for ${{ env.MC_VERSION }}"
-          version: "v${{ github.run_number }}" 
+          # This is the title people see on the websites
+          name: "Drigo 3D Lantern's x Punchy - MC ${{ env.MC_VERSION }}"
+          
+          # This sets the version number (e.g., 1.21.11)
+          version: "${{ env.MC_VERSION }}" 
           
           game-versions: ${{ env.MC_VERSION }}
           loaders: minecraft
-          files: drigo-pack.zip
+          files: Drigo 3D Lantern's x Punchy.zip
