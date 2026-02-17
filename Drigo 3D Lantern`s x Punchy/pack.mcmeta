@@ -1,10 +1,9 @@
 {
-  "pack": {
-    "description": "\u00A74■ Compatible with Punchy\u00A7r\n■ Made by\u00A78 Drigo_",
-    "pack_format": 75,
-    "supported_formats": {
-      "min_inclusive": 15,
-      "max_inclusive": 1000
-    }
-  }
-}
+    "pack": {
+        "description": "§4■ Compatible with Punchy§r\n§8■ Made by Drigo_",
+        "pack_format": 75,
+    "min_format": [15, 0],
+    "max_format": [1000, 0],
+    "supported_formats": [15, 1000]
+    }	
+}   
