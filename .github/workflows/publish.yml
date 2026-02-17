@@ -15,7 +15,7 @@ jobs:
       - name: Zip Resource Pack
         run: |
           cd "Drigo 3D Lantern's x Punchy"
-          zip -r ../my-texture-pack.zip assets/ pack.mcmeta pack.png
+          zip -r "../Drigo 3D Lantern's x Punchy.zip" assets/ pack.mcmeta pack.png
 
       - name: Publish to Modrinth & CurseForge
         uses: Kir-Antipov/mc-publish@v3.3
