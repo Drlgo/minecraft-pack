@@ -72,7 +72,7 @@ jobs:
         run: |
           # Enter the folder and zip the contents directly into the workspace root
           cd Drigo*/
-          zip -r "../Drigo 3D Lantern's x Punchy.zip" ./*
+          zip -r "../Drigo_3D_Lanterns_x_Punchy.zip" ./*
 
       - name: Publish to Modrinth and CurseForge
         if: env.NEW_UPDATE == 'true'
@@ -87,7 +87,7 @@ jobs:
           
           name: "Drigo 3D Lantern's x Punchy - MC ${{ env.MC_VERSION }}"
           version: ${{ env.MC_VERSION }}
-          files: "Drigo 3D Lantern's x Punchy.zip"
+          files: "Drigo_3D_Lanterns_x_Punchy.zip"
           
           # Tell CurseForge this is a vanilla resource pack
           loaders: "minecraft"
