@@ -14,7 +14,8 @@ jobs:
 
       - name: Zip Resource Pack
         run: |
-          cd "Drigo 3D Lantern's x Punchy"
+          # The * finds your folder automatically regardless of the backtick
+          cd Drigo*/ 
           zip -r ../drigo-pack.zip assets/ pack.mcmeta pack.png
 
       - name: Publish to Modrinth & CurseForge
