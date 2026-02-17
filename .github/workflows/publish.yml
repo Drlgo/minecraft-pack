@@ -1,8 +1,10 @@
 name: Auto-Publish Texture Pack
 
 on:
+  # Runs automatically every day at 12:00 UTC
   schedule:
     - cron: '0 12 * * *'
+  # Allows you to click "Run workflow" manually from the GitHub Actions tab
   workflow_dispatch:
 
 jobs:
@@ -18,36 +20,40 @@ jobs:
       - name: Check Mojang for Updates
         id: check_version
         run: |
+          # 1. Ask Mojang for the newest release version
           LATEST_MC=$(curl -s https://piston-meta.mojang.com/mc/game/version_manifest_v2.json | jq -r '.latest.release')
           echo "MC_VERSION=$LATEST_MC" >> $GITHUB_ENV
           
+          # 2. Read your tracking file
           if [ -f current_mc_version.txt ]; then
             CURRENT_MC=$(cat current_mc_version.txt)
           else
             CURRENT_MC="none"
           fi
           
+          # 3. Compare them
           if [ "$LATEST_MC" == "$CURRENT_MC" ]; then
             echo "Minecraft is still on $LATEST_MC. No update needed."
             echo "NEW_UPDATE=false" >> $GITHUB_ENV
           else
+            echo "🚨 New Minecraft version detected! Updating to $LATEST_MC."
             echo "NEW_UPDATE=true" >> $GITHUB_ENV
             echo $LATEST_MC > current_mc_version.txt
           fi
 
-      - name: Update pack_format and Commit
+      - name: Update pack_format (Text Only) and Commit
         if: env.NEW_UPDATE == 'true'
         run: |
-          # 1. Get the dynamic format
+          # 1. Get the dynamic format number
           FORMAT=$(curl -s https://raw.githubusercontent.com/misode/mcmeta/summary/versions/data.json | jq -r ".[] | select(.id == \"${{ env.MC_VERSION }}\") | .resource_pack_version")
           [ -z "$FORMAT" ] || [ "$FORMAT" == "null" ] && FORMAT=75
 
-          # 2. ONLY update the pack_format number using jq
+          # 2. Use sed to change ONLY the number. This preserves your exact formatting.
           cd Drigo*/
-          jq --arg format "$FORMAT" '.pack.pack_format = ($format | tonumber)' pack.mcmeta > temp.json && mv temp.json pack.mcmeta
+          sed -i "s/\"pack_format\": [0-9]*/\"pack_format\": $FORMAT/" pack.mcmeta
           cd ..
           
-          # 3. Save changes
+          # 3. Save changes back to GitHub
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add current_mc_version.txt Drigo*/pack.mcmeta
@@ -57,19 +63,22 @@ jobs:
       - name: Zip the Texture Pack
         if: env.NEW_UPDATE == 'true'
         run: |
+          # Enter the folder and zip "." so files are at the absolute root of the zip
           cd Drigo*/
-          # Zipping "." ensures no hidden folder levels for Modrinth
           zip -r "../Drigo_3D_Lanterns_x_Punchy.zip" .
-          
+
       - name: Publish to Modrinth and CurseForge
         if: env.NEW_UPDATE == 'true'
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: "X4S78Ho4"
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          
           curseforge-id: "1458402"
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          
           name: "Drigo 3D Lantern's x Punchy - MC ${{ env.MC_VERSION }}"
           version: ${{ env.MC_VERSION }}
           files: "Drigo_3D_Lanterns_x_Punchy.zip"
+          
           loaders: "minecraft"
