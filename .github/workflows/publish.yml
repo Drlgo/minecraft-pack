@@ -1,1 +1,42 @@
+name: Publish Texture Pack
 
+on:
+  push:
+    tags:
+      - 'v*' # This triggers the script when you create a tag like v1.0
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Zip Resource Pack
+        run: |
+          cd "Drigo 3D Lantern's x Punchy"
+          zip -r ../my-texture-pack.zip assets/ pack.mcmeta pack.png
+
+      - name: Publish to Modrinth & CurseForge
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          # --- Modrinth Settings ---
+          modrinth-id: X4S78Ho4 # Replace with your Modrinth ID
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+          # --- CurseForge Settings ---
+          curseforge-id: 1458402 # Replace with your CurseForge ID
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+
+          # --- General Settings ---
+          name: Drigo 3D Lanterns ${{ github.ref_name }}
+          version: ${{ github.ref_name }}
+          version-type: release
+          
+          # This tells the sites which Minecraft versions are supported
+          game-versions: |
+            1.21
+            1.21.11
+          
+          loaders: minecraft
+          files: Drigo 3D Lantern`s x Punchy.zip
