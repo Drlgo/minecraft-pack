@@ -25,7 +25,7 @@ jobs:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           curseforge-id: 1458402
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-          name: Drigo 3D Lanterns ${{ github.ref_name }}
+          name: Drigo 3D Lantern`s x Punchy ${{ github.ref_name }}
           version: ${{ github.ref_name }}
           version-type: release
           game-versions: |
