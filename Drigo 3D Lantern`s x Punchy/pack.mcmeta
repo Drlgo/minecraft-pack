@@ -1,0 +1,9 @@
+{
+    "pack": {
+        "description": "\u00A74■ Compatible with Punchy\u00A7r\n■ Made by\u00A78 Drigo_",
+        "pack_format": 69,
+    "min_format": [15, 0],
+    "max_format": [1000, 0],
+    "supported_formats": [15, 1000]
+    }	
+}
