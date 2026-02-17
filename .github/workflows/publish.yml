@@ -1,9 +1,16 @@
-name: Publish Texture Pack
+name: Ghost Mode Auto-Update
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
+  schedule:
+    # This tells GitHub to check every day at 12:00 PM (UTC)
+    - cron: '0 12 * * *' 
+  workflow_dispatch: # This adds a manual "Run" button just in case
+
+permissions:
+  contents: write
 
 jobs:
   publish:
@@ -12,24 +19,52 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Zip Resource Pack
+      - name: Get Latest MC Version
+        id: mc_data
         run: |
-          # The * finds your folder automatically regardless of the backtick
-          cd Drigo*/ 
-          zip -r ../Drigo 3D Lantern`s x Punchy.zip assets/ pack.mcmeta pack.png
+          VERSION=$(curl -s https://piston-meta.mojang.com/mc/game/version_manifest_v2.json | jq -r '.latest.release')
+          
+          # Simplified format logic - update these as needed
+          if [[ "$VERSION" == 1.21* ]]; then FORMAT=34; 
+          elif [[ "$VERSION" == 1.22* ]]; then FORMAT=42; 
+          else FORMAT=34; fi
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "format=$FORMAT" >> $GITHUB_OUTPUT
+
+      - name: Check if update is needed
+        id: check
+        run: |
+          cd Drigo*/
+          CURRENT_FORMAT=$(grep -oP '"pack_format": \K[0-9]+' pack.mcmeta)
+          if [ "$CURRENT_FORMAT" != "${{ steps.mc_data.outputs.format }}" ]; then
+            echo "update_needed=true" >> $GITHUB_OUTPUT
+          else
+            echo "update_needed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update and Push Changes
+        if: steps.check.outputs.update_needed == 'true'
+        run: |
+          cd Drigo*/
+          sed -i "s/\"pack_format\": [0-9]*/\"pack_format\": ${{ steps.mc_data.outputs.format }}/g" pack.mcmeta
+          git config --global user.name "Drigo-Bot"
+          git config --global user.email "drigo-bot@users.noreply.github.com"
+          git add pack.mcmeta
+          git commit -m "Auto-update pack_format to ${{ steps.mc_data.outputs.format }} for MC ${{ steps.mc_data.outputs.version }}"
+          git push
 
       - name: Publish to Modrinth & CurseForge
+        # Only publishes if you pushed new files OR if the version changed
+        if: github.event_name == 'push' || steps.check.outputs.update_needed == 'true'
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: X4S78Ho4
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           curseforge-id: 1458402
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-          name: Drigo 3D Lantern`s x Punchy ${{ github.ref_name }}
-          version: ${{ github.ref_name }}
-          version-type: release
-          game-versions: |
-            1.21
-            1.21.1
+          name: "Auto-Update for ${{ steps.mc_data.outputs.version }}"
+          version: "v${{ github.run_number }}"
+          game-versions: ${{ steps.mc_data.outputs.version }}
           loaders: minecraft
           files: Drigo 3D Lantern`s x Punchy.zip
